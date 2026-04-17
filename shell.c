@@ -1,31 +1,15 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-#ifndef EXIT_SUCCESS
-    #define EXIT_SUCCESS 0
-#endif
+#include "include/shell.h"
+#include "include/exec.h"
 
-#ifndef EXIT_FAILURE
-    #define EXIT_FAILURE 1
-#endif
-
-#ifndef NO_ARGS_PASSED
- #define NO_ARGS_PASSED 55
-#endif
-
-void shush_mainloop();
-char* readline();
-char** splitargs(char* line);
-int execute(char** args);
-void display_prompt(int status);
-
-void exit_handler(int signal);
-
-int main(int argc, char** argv) {
-    signal(SIGINT, exit_handler);
+int main() {
+    /* the main shell process should not be interrupted and can only be killed or terminated */
+    signal(SIGINT, SIG_IGN);
 
     // 1. config
     
@@ -64,7 +48,7 @@ void shush_mainloop() {
 #define INIT_READLINE_BUFSIZE 50;
 char* readline() {
     int capacity = INIT_READLINE_BUFSIZE;
-    char* line = (char*) malloc(sizeof(char*) * capacity);
+    char* line = (char*) malloc(sizeof(char) * capacity);
 
     if (!line) {
         fprintf(stderr, "Failed to allocate memory to (char* line)\n");
@@ -113,11 +97,8 @@ char** splitargs(char* line) {
     return (char**) tokens;
 }
 
-void exit_handler(int sig) {
-    exit(0);
-}
-
 int execute(char** args) {
+    int status;
     if (!args) {
         return NO_ARGS_PASSED;
     }
@@ -127,20 +108,47 @@ int execute(char** args) {
         exit(0);
     }
 
-    return 0;
+    status = exec_builtin(args);
+    if (status == EXIT_SUCCESS) {
+        return status;
+    }
+    if (status == NARGS_NOT_MET) {
+        return status;
+    }
+    status = exec_prog(args);
+    return status;
 }
+
 
 void display_prompt(int status) {
     const char* prompt = "> ";
     char nil_flag[6] = "nil";
+    char err_flag[6] = "err";
+    char arg_err_flag[10] = "arg_err";
 
     switch(status) {
         case NO_ARGS_PASSED:
             strcat(nil_flag, prompt);
             write(STDOUT_FILENO, nil_flag, strlen(nil_flag));
             break;
+
+        case NARGS_NOT_MET:
+            strcat(arg_err_flag, prompt);
+            write(STDOUT_FILENO, arg_err_flag, strlen(arg_err_flag));
+            break;
+            
+        case EXIT_FAILURE:
+            strcat(err_flag, prompt);
+            write(STDOUT_FILENO, err_flag, strlen(err_flag));
+            break;
+
+        case EXIT_SUCCESS:
+            write(STDOUT_FILENO, prompt, strlen(prompt));
+            break;
             
         default:
-            write(STDOUT_FILENO, prompt, strlen(prompt));
+            char code_flag[7];
+            sprintf(code_flag, "%d%s", status, prompt);
+            write(STDOUT_FILENO, code_flag, strlen(code_flag));
     }
 }
