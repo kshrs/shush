@@ -1,7 +1,5 @@
 # shush - a shell
 
----
-
 **shush** is a simple shell written in C.
 
 ## Code Structure
