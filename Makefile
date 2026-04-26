@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -Werror
 BUILD_DIR = build
 TARGET = $(BUILD_DIR)/shush
 OBJS_DIR = $(BUILD_DIR)/objs
-OBJS = $(OBJS_DIR)/shell.o $(OBJS_DIR)/exec.o $(OBJS_DIR)/builtins.o
+OBJS = $(OBJS_DIR)/shell.o $(OBJS_DIR)/exec.o $(OBJS_DIR)/builtins.o $(OBJS_DIR)/alias.o
 
 # default target
 all: $(TARGET) 

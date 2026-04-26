@@ -45,3 +45,13 @@ int exec_builtin(char** args) {
     }
     return EXIT_FAILURE;
 }
+
+char** exec_alias(char** args) {
+    for (int i = 0; aliases[i].alias_name != NULL; ++i) {
+        if (strcmp(aliases[i].alias_name, args[0]) == 0) { 
+            return aliases[i].alias_exp;
+        }
+    }
+    return NULL;
+}
+

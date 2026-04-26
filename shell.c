@@ -93,7 +93,7 @@ char** splitargs(char* line) {
         tokens = (char**) realloc(tokens, sizeof(char*) * (count + 1));
         token = strtok(NULL, delim);
     }
-    *(tokens + count) = token;
+    *(tokens + count) = token; // append the args with NULL Terminator
     return (char**) tokens;
 }
 
@@ -108,7 +108,11 @@ int execute(char** args) {
         exit(0);
     }
 
+    char** exp_args = exec_alias(args);
+    args = (exp_args == NULL) ? args : exp_args;
+
     status = exec_builtin(args);
+
     if (status == EXIT_SUCCESS) {
         return status;
     }
