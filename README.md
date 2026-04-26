@@ -11,9 +11,14 @@ shush
      |--shell.h
      |--exec.h
      |--builtins.h
+     |--color.h
+     |--prompt.h
+     |--alias.h
  |--shell.c     -> Main shell rules and function calls.
  |--exec.c      -> Definitions of exec functions.
  |--builtins.c  -> Definitions of builtin functions.
+ |--prompt.c    -> Prompt Handling and Configuration.*
+ |--alias.c     -> Alias Handling and Configuration.*
  |--Makefile
  |--LICENSE
  |--README.md   -> You are here.
@@ -42,9 +47,9 @@ cd build/
 ## Chores
 
 1. Implement Environment variable setup.
-2. Alias Feature.
-3. Some more builtin commands.
-4. Handle keyboard events.
+2. Some more builtin commands.
+3. Handle keyboard events.
+4. Bug: Ignorance of extra arguments during the usage of alias.
 
 ---
 

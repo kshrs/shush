@@ -6,17 +6,20 @@
 
 #include "include/shell.h"
 #include "include/exec.h"
+#include "include/prompt.h"
 
 int main() {
     /* the main shell process should not be interrupted and can only be killed or terminated */
     signal(SIGINT, SIG_IGN);
 
     // 1. config
+    init_prompt();
     
     // 2. mainloop
     shush_mainloop();
 
     // 3. clear mem
+    free(prompt);
     
     return EXIT_SUCCESS;
 }
@@ -124,35 +127,3 @@ int execute(char** args) {
 }
 
 
-void display_prompt(int status) {
-    const char* prompt = "> ";
-    char nil_flag[6] = "nil";
-    char err_flag[6] = "err";
-    char arg_err_flag[10] = "arg_err";
-
-    switch(status) {
-        case NO_ARGS_PASSED:
-            strcat(nil_flag, prompt);
-            write(STDOUT_FILENO, nil_flag, strlen(nil_flag));
-            break;
-
-        case NARGS_NOT_MET:
-            strcat(arg_err_flag, prompt);
-            write(STDOUT_FILENO, arg_err_flag, strlen(arg_err_flag));
-            break;
-            
-        case EXIT_FAILURE:
-            strcat(err_flag, prompt);
-            write(STDOUT_FILENO, err_flag, strlen(err_flag));
-            break;
-
-        case EXIT_SUCCESS:
-            write(STDOUT_FILENO, prompt, strlen(prompt));
-            break;
-            
-        default:
-            char code_flag[7];
-            sprintf(code_flag, "%d%s", status, prompt);
-            write(STDOUT_FILENO, code_flag, strlen(code_flag));
-    }
-}

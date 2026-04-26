@@ -29,7 +29,4 @@ char** splitargs(char* line);
 /* execute function to call decide caller func like builtins or execvp */
 int execute(char** args);
 
-/* simple prompt function to present the error code along with the prompt */
-void display_prompt(int status);
-
 #endif
